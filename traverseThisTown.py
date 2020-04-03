@@ -10,16 +10,18 @@ class Node:
 class Graph:
   def __init__(self):
     self.allNodes = []
+    self.nodeMap = {}
 
   def getNode(self, val):
-    for node in self.allNodes:
-      if node.val == val:
-        return node
-    return None
+    return self.nodeMap.get(val)
 
   def addNode(self, nodeVal):
     node = Node(nodeVal)
     self.allNodes.append(node)
+    self.nodeMap[nodeVal] = node
+  
+  def getAllNodes(self):
+    return self.nodeMap
 
   def addUndirectedEdge(self, first, second):
     count = 0
@@ -78,12 +80,6 @@ class Graph:
     self.allNodes[firstIdx].nodes.pop(idx2)
     self.allNodes[secondIdx].nodes.pop(idx1)
 
-  def getAllNodes(self):
-    d = {}
-    for node in self.allNodes:
-      d[node] = node
-    return d
-
 def createRandomUnweightedGraph(n):
   g = Graph()
   if n == 0:
@@ -92,7 +88,7 @@ def createRandomUnweightedGraph(n):
   edges = []
   for i in range(n):
     g.addNode(i)
-     # decide how many edges each node will have
+    # decide how many edges each node will have
     if n == 1:
       return g
     if n == 2:
@@ -115,16 +111,9 @@ def createRandomUnweightedGraph(n):
       pairs.append((i, node2))
 
   for pair in pairs:
-    first = None
-    second = None
-    
-    for node in g.getAllNodes():
-      if first and second:
-        break
-      if node.val == pair[0]:
-        first = node
-      if node.val == pair[1]:
-        second = node
+  
+    first = g.getNode(pair[0])
+    second = g.getNode(pair[1])
 
     g.addUndirectedEdge(first,second)
 
@@ -146,6 +135,9 @@ def BFTIterLinkedList(graph):
 
 def BFTRecLinkedList(graph):
   return GraphSearch.BFTRec(graph)
+
+def DFSIterLinkedList(start, end):
+  return GraphSearch.DFSIter(start, end)
 
 class GraphSearch:
   def DFSIter(start, end):
@@ -173,6 +165,7 @@ class GraphSearch:
 
   def myDFSRec(start, end, path = []):
     path.append(start)
+    
     start.visited == True
     if start.val == end.val:
       return path
@@ -186,7 +179,7 @@ class GraphSearch:
   def BFTRec(graph):
     path = []
     queue = []
-    nodesInGraph = graph.getAllNodes()
+    nodesInGraph = graph.getAllNodes().values()
     for node in nodesInGraph:
       if node.visited == False:
         node.visited = True
@@ -209,7 +202,7 @@ class GraphSearch:
     path = []
     q = []
     nodesInGraph = graph.getAllNodes()
-    for node in nodesInGraph:
+    for node in nodesInGraph.values():
       if node.visited != True:
         node.visited = True
         q.append(node)
@@ -217,18 +210,20 @@ class GraphSearch:
           curr = q.pop(0)
           path.append(curr)
           for vertex in curr.nodes:
-            if nodesInGraph[vertex].visited != True:
-              nodesInGraph[vertex].visited = True
+            value = vertex.val
+            if nodesInGraph[value].visited != True:
+              nodesInGraph[value].visited = True
               q.append(vertex)
     return path
 
-g = createRandomUnweightedGraph(8)
+
+g = createRandomUnweightedGraph(10)
 
 nodes = g.getAllNodes()
-for node in nodes:
+for node in nodes.values():
   print(node.val)
-  for node in node.nodes:
-    print("edge", node.val)
+  for neighbor in node.nodes:
+    print("edge", neighbor.val)
 
 path = GraphSearch.DFSIter(g.getNode(0), g.getNode(3))
 print("dfs")
@@ -239,7 +234,7 @@ else:
   print("no valid dfs iter")
 
 nodes2 = g.getAllNodes()
-for node1 in nodes2:
+for node1 in nodes2.values():
   node1.visited = False
 
 path = GraphSearch.BFTIter(g)
@@ -248,7 +243,7 @@ for node in path:
   print(node.val)
 
 nodes2 = g.getAllNodes()
-for node1 in nodes2:
+for node1 in nodes2.values():
   node1.visited = False
 
 path = GraphSearch.DFSRec(g.getNode(0), g.getNode(3))
@@ -260,7 +255,7 @@ else:
   print("no valid dfs rec")
 
 nodes2 = g.getAllNodes()
-for node1 in nodes2:
+for node1 in nodes2.values():
   node1.visited = False
 
 path = GraphSearch.BFTRec(g)
@@ -271,13 +266,18 @@ if path:
 else:
   print("no valid bft rec") 
 
+nodes2 = g.getAllNodes()
+for node1 in nodes2.values():
+  node1.visited = False
+
 print()
+
 
 newGraph = createLinkedList(10)
 print("Recursion Limit: ", sys.getrecursionlimit())
 
 llNodes = newGraph.getAllNodes()
-for node in llNodes:
+for node in llNodes.values():
   print(node.val)
   for node in node.nodes:
     print("edge", node.val)
@@ -291,8 +291,8 @@ for node in returnedPath:
 print()
 print()
 
-nodes2 = newGraph.getAllNodes()
-for node1 in nodes2:
+vals = newGraph.getAllNodes()
+for node1 in vals.values():
   node1.visited = False
 
 returnedPath = BFTRecLinkedList(newGraph)
@@ -301,3 +301,8 @@ for node in returnedPath:
   print(node.val, end= " ")
 
 print()
+print()
+
+nodes2 = newGraph.getAllNodes()
+for node1 in nodes2.values():
+  node1.visited = False
