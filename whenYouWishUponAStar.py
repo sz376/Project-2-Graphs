@@ -8,7 +8,7 @@ class GridNode:
     self.val = nodeVal
     self.coordinates = (x,y)
     self.visited = False
-    self.nodes = []
+    self.nodes = []    #does this contain neighbors?
 
   def __lt__(self, other):
     in1=self.val
@@ -30,7 +30,7 @@ class GridGraph:
 
   def addGridNode(self, x, y, nodeVal):
     node = GridNode(x, y, nodeVal)
-    self.allNodes.append(node)
+    self.allNodes.append(node)            #works fine with your other functions but consider checking for dup nodes.
     self.nodeMap[nodeVal] = node
 
   def isNeighbor(first, second):
@@ -50,7 +50,7 @@ class GridGraph:
     firstIdx = -1
     secondIdx = -1
     for node in self.allNodes:
-      if firstIdx != -1 and secondIdx != -1:
+      if firstIdx != -1 and secondIdx != -1: # 
         break
       if node.val == first.val:
         firstIdx = count
@@ -61,7 +61,7 @@ class GridGraph:
     if firstIdx == secondIdx:
       return
     else:
-      self.allNodes[firstIdx].nodes.append(second)
+      self.allNodes[firstIdx].nodes.append(second) # consider checking for duplicates either here or in addGridNode to be through
       self.allNodes[secondIdx].nodes.append(first)
     
   def removeUndirectedEdge(self, first, second):
@@ -70,8 +70,8 @@ class GridGraph:
     count = 0
     firstIdx = -1
     secondIdx = -1
-    for node in self.allNodes:
-      if firstIdx != -1 and secondIdx != -1:
+    for node in self.allNodes:                   #since this block of code was used in addedge as well, consider making it a seperate funct. for clarity
+      if firstIdx != -1 and secondIdx != -1:     #for example: a function that returns int tuple
         break
       if node.val == first.val:
         firstIdx = count
@@ -99,6 +99,8 @@ class GridGraph:
     
     self.allNodes[firstIdx].nodes.pop(idx2)
     self.allNodes[secondIdx].nodes.pop(idx1)
+    
+    # missing a getAllNodes funct.
     
 def createRandomGridGraph(n):
   g = GridGraph()
@@ -137,7 +139,7 @@ def heuristic(start, end):
   ydiff = end.coordinates[1] - start.coordinates[1]
   return abs(xdiff) + abs(ydiff) 
 
-def astarHeap(sourceNode, destNode):
+def astarHeap(sourceNode, destNode):  
   if not sourceNode or not destNode:
     return []
 
@@ -185,7 +187,7 @@ def astarHeap(sourceNode, destNode):
     curr = mapParents[curr]
   return path
 
-def astar(sourceNode, destNode):
+def astar(sourceNode, destNode):   #consider removing this if its not used
   if not sourceNode or not destNode:
     return []
   # Create an empty map of nodes to distances. Initialize every node to map to infinity.
