@@ -6,7 +6,7 @@ class Node:
   def __init__(self, val):
     self.val = val
     self.visited = False
-    self.nodes = []
+    self.nodes = [] #specify if this is a list of neighbors or a general list of all nodes for clarity
 
 class DirectedGraph:
   def __init__(self):
